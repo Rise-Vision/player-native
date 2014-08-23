@@ -148,7 +148,7 @@ log() {
 
 rvp_add_root_xauth() {
 	echo Adding x11 auth for $SUDO_USER to root
-	xauth -f /root/.Xauthority add $(sudo -u $SUDO_USER xauth list $DISPLAY)
+	xauth -f $SUDO_HOME/.Xauthority add $(sudo -u $SUDO_USER xauth list $DISPLAY)
 }
 
 rvp_update_send_displayerror_core () {
