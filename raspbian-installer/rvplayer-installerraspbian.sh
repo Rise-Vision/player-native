@@ -147,8 +147,8 @@ log() {
 }
 
 rvp_add_root_xauth() {
-	echo Adding current user xauth for current display to root user
-	sudo xauth -f /root/.Xauthority add $(xauth list $DISPLAY)
+	echo Adding x11 auth for $SUDO_USER to root
+	xauth -f /root/.Xauthority add $(sudo -u $SUDO_USER xauth list $DISPLAY)
 }
 
 rvp_update_send_displayerror_core () {
@@ -1100,7 +1100,6 @@ Privacy or do not want to install Rise Vision Player please click Cancel.' > $IN
 	fi
 
 }
-rvp_add_root_xauth
 
 mkdir -p $INSTALL_PATH
 
@@ -1127,6 +1126,8 @@ fi
 if ! $SILENT; then rvp_check_linux_version; fi
 
 if ! $SILENT; then rvp_check_current_user; fi
+
+rvp_add_root_xauth
 
 rvp_fix_display_id
 
