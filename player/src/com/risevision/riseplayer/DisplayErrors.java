@@ -1,4 +1,4 @@
-// Copyright © 2010 - May 2014 Rise Vision Incorporated.
+// Copyright Â© 2010 - May 2014 Rise Vision Incorporated.
 // Use of this software is governed by the GPLv3 license
 // (reproduced in the LICENSE file).
 
@@ -167,6 +167,7 @@ public class DisplayErrors {
 					 }
 					 catch (Exception e) {} 
 				}
+				br.close();
 			}
 			
 		} catch (Exception e) {
