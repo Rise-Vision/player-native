@@ -226,6 +226,7 @@ Var PlayerURLStable
 Var PlayerVersionLatest
 Var PlayerURLLatest
 
+Var BrowserUpgradeable
 
 # Installer sections
 Section -Main SEC0000
@@ -522,8 +523,31 @@ Section -Main SEC0000
     ;-------------------
     ; Chromium update
     
-    ${ChromiumUpdate}
+    ; If displayId is not present, always update
+    StrCmp $DisplayId "" UpdateChromium 0
 
+    ${DetailPrint} "Checking if browser is upgradeable..."
+    
+    StrCpy $TempURL "${CoreURL}/player/isBrowserUpgradeable?displayId=$DisplayId"
+    ${Download} "silent" "Checking if browser is upgradeable" "$TempURL" "$PLUGINSDIR\BrowserUpgradeable.config" "true"
+
+    ${LineRead} "$PLUGINSDIR\BrowserUpgradeable.config" "1" $BrowserUpgradeable
+
+    StrCmp $BrowserUpgradeable "true$\n" 0 SkipChromiumUpdateNotUpgradeable
+
+    ${DetailPrint} "Browser is upgradeable."
+
+    UpdateChromium:
+
+    ${ChromiumUpdate}
+    Goto ShutdownPlayer
+
+    SkipChromiumUpdateNotUpgradeable:
+
+    ${DetailPrint} "Skipping Chrome update. Browser not upgradeable."
+
+    ShutdownPlayer:
+    
     ${DetailPrint} "Shutting down RisePlayer ..."
     
     ${Download} "silent" "Shutting down Rise Vision Player" "${RisePlayerShutdownURL}" "NUL" "false"
