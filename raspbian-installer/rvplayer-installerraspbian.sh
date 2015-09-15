@@ -1,6 +1,5 @@
 #!/bin/sh
 # Rise Vision Player installation script
-
 set -e
 
 CURRENT_USER=$USER
@@ -147,6 +146,11 @@ log() {
 	echo "$(date) - $1">>${LOG_FILE}
 }
 
+rvp_add_root_xauth() {
+	echo Adding x11 auth for $SUDO_USER to root
+	xauth -f $SUDO_HOME/.Xauthority add $(sudo -u $SUDO_USER xauth list $DISPLAY)
+}
+
 rvp_update_send_displayerror_core () {
 set +e
 	error_code="$1"
@@ -243,7 +247,8 @@ If you cannot correct this error please post the details to http://community.ris
 
 Press Yes to retry or No to abandon the installation."
 				set +e
-				env DISPLAY=:0.0 zenity --question --title "Installation Failed" --text "$USER_WARNING";
+				zenity --question --title "Installation Failed" --text "$USER_WARNING";
+				zenity --question --title "Installation Failed" --text "$USER_WARNING";
 				if [ $? -eq 0 ] 
 				then
 				    rvp_run_installer
@@ -450,7 +455,8 @@ rvp_kill_chromium() {
 			then
 				WARNING_TEXT='Chrome, Chromium or Java, are running and the installation program will close them to complete the Rise Vision Player setup. Please save any data and press Okay when you are ready to proceed.'
 				set +e
-				env DISPLAY=:0.0 zenity --warning --text "$WARNING_TEXT";				
+				zenity --warning --text "$WARNING_TEXT";				
+				zenity --warning --text "$WARNING_TEXT";				
 				set -e
 			else
 				echo ''
@@ -802,7 +808,8 @@ rvp_confirm_add_player_to_autostart() {
 		
 Thank you for installing Rise Vision Player!'
 			set +e
-			env DISPLAY=:0.0 zenity --question --text "$USER_WARNING"
+			zenity --question --text "$USER_WARNING"
+			zenity --question --text "$USER_WARNING"
 			if [ $? -eq 0 ] 
 			then
 			    rvp_add_player_to_autostart
@@ -904,7 +911,8 @@ rvp_start_player() {
 		rvp_save_display_id
 		#run RisePlayer in non-blocking mode (background) and hide output
 		#also run it as job, so it won't be killed when terminal is closed 
-		echo "export DISPLAY=:0; java -jar '$INSTALL_PATH/$RISE_PLAYER_LINUX.jar' >/dev/null 2>&1 &" | at now
+		echo "export DISPLAY=$DISPLAY; java -jar '$INSTALL_PATH/$RISE_PLAYER_LINUX.jar' >/dev/null 2>&1 &" | at now
+		#echo "java -jar '$INSTALL_PATH/$RISE_PLAYER_LINUX.jar' >/dev/null 2>&1 &" | at now
 	fi
 
 }
@@ -940,7 +948,8 @@ To set default java version run "sudo update-alternatives --config java".
 
 Run "rvplayer-installer.sh" again after java is configured.'
 
-			env DISPLAY=:0.0 zenity --warning --text "$JAVA_WARNING"
+			zenity --warning --text "$JAVA_WARNING"
+			zenity --warning --text "$JAVA_WARNING"
 		fi
 
 	fi
@@ -959,7 +968,8 @@ rvp_check_current_user() {
 			USER_WARNING='The Rise Vision Player Installation must be run with Sudo.
 Press Okay to quit and then run "sudo ./rvplayer-installer.sh"'
 
-			env DISPLAY=:0.0 zenity --warning --text "$USER_WARNING"
+			zenity --warning --text "$USER_WARNING"
+			zenity --warning --text "$USER_WARNING"
 		else
 			echo ''
 			echo 'The Rise Vision Player Installation must be run with Sudo. "sudo ./rvplayer-installer.sh"'
@@ -1004,7 +1014,8 @@ rvp_check_linux_version() {
 				USER_WARNING='The Rise Vision Player installation that you are using is not approved for this operating system. Press Yes to continue with the installation or No to abort.'
 				log "$USER_WARNING"
 				set +e
-				env DISPLAY=:0.0 zenity --question --text "$USER_WARNING"
+				zenity --question --text "$USER_WARNING"
+				zenity --question --text "$USER_WARNING"
 				if [ $? -eq 1 ] ; then
 					exit
 				fi
@@ -1056,7 +1067,8 @@ Privacy or do not want to install Rise Vision Player please click Cancel.' > $IN
 		if [ -e /usr/bin/zenity ]
 		then
 
-			env DISPLAY=:0.0 zenity --text-info --height 400 --width 500 --html \
+			zenity --text-info --height 400 --width 500 --html \
+			zenity --text-info --height 400 --width 500 --html \
 				--title="License" \
 				--filename=$INSTALL_PATH/license.txt  \
 				--checkbox="I agree with the Terms of Service and Privacy"
@@ -1114,6 +1126,8 @@ fi
 if ! $SILENT; then rvp_check_linux_version; fi
 
 if ! $SILENT; then rvp_check_current_user; fi
+
+rvp_add_root_xauth
 
 rvp_fix_display_id
 
@@ -1224,7 +1238,7 @@ then
 fi
 
 if [ "$USER" = "root" ]; then rvp_chromium_hacks; fi
-	
+
 rvp_chromium_master_preferences
 
 rvp_update_crontab
